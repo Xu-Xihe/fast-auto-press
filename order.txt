@@ -1,0 +1,7 @@
+system("pause")【暂停】《stdlib.h》
+
+《Windows.h》 《WinUser.h》
+keybd_event(16,0,0,0); //按下Shift键
+keybd_event('A',0,0,0); //按下a键
+keybd_event('A',0,KEYEVENTF_KEYUP,0); //松开a键
+keybd_event(16,0,KEYEVENTF_KEYUP,0); //松开Shift键
