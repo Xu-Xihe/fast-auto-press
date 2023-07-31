@@ -5,19 +5,48 @@
 #include <ctime>
 #include <iostream>
 #define KEY_DOWN(VK_NONAME) ((GetAsyncKeyState(VK_NONAME) & 0x8000) ? 1 : 0)
-#define lefta 192
-#define leftb 45
-#define right 19
-const double timer = 1.5;
-clock_t sta, last;
-int once;
-bool ji, down;
-POINT wind;
-inline void getmouse()
+const double timer = 1.5; // clear time left after press '/'
+clock_t sta, last;        // clear time record
+int once;                 // if rise up
+bool ji;                  // if '/' rise up
+POINT wind;               // mouse position
+const int killlen = 16;   // How many to kill
+const char taskname[killlen + 1][100] = {
+    "",
+    "chrome.exe",                       // 1
+    "wget2.exe",                        // 2
+    "vlc.exe",                          // 3
+    "winrar.exe",                       // 4
+    "IDMan.exe",                        // 5
+    "Notepad.exe",                      // 6
+    "code.exe",                         // 7
+    "java.exe",                         // 8
+    "",                                 // 9 occupied
+    "Motrix.exe",                       // 10
+    "hysteria-tun-windows-6.0-386.exe", // 11
+    "ShadowsocksR.exe",                 // 12
+    "v2free.exe",                       // 13
+    "v2ray.exe",                        // 14
+    "v2rayN.exe",                       // 15
+    "clash-windows-386.exe"             // 16
+};
+const int killsequence[10][20] = {
+    {},
+    {1, 4, 11, 12, 13, 14, 15, 16}, // 1
+    {2, 4},                         // 2
+    {3, 4},                         // 3
+    {4},                            // 4
+    {5, 10},                        // 5
+    {6, 4},                         // 6
+    {7},                            // 7
+    {8, 4},                         // 8
+};
+const char killorder[] = "taskkill /t /f /im ";
+inline void getmouse() // get mouse position
 {
     GetCursorPos(&wind);
 }
-inline void res()
+inline void res() // reset the light condition
 {
     if (GetKeyState(VK_SCROLL) && 0x001)
     {
@@ -30,206 +59,105 @@ inline void res()
         keybd_event(144, 0, KEYEVENTF_KEYUP, 0);
     }
 }
-inline void kill()
+inline void kill(int pos)
 {
-    if (!(GetKeyState(VK_NUMLOCK) && 0x001))
+    keybd_event(20, 0, 0, 0); // signal
+    keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
+    char com[50];
+    if (pos == 0)
     {
-        system("taskkill /t /f /im WsaClient.exe");
-        system("taskkill /t /f /im WsaService.exe");
-        system("taskkill /t /f /im GSKServer.exe");
-        system("taskkill /t /f /im vlc.exe");
-        //system("taskkill /t /f /im msedge.exe");
+        for (int i = 1; i < killlen; i++)
+        {
+            if ((i != 3 && i != 8) || !(GetKeyState(VK_NUMLOCK) && 0x001))
+            {
+                strcpy(com, killorder);
+                strcat(com, taskname[i]);
+                system(com);
+            }
+        }
+        res();
     }
-    system("taskkill /t /f /im chrome.exe");
-    system("taskkill /t /f /im hysteria-tun-windows-6.0-386.exe");
-    system("taskkill /t /f /im wget2.exe");
-    system("taskkill /t /f /im Notepad.exe");
-    system("taskkill /t /f /im code.exe");
-    system("taskkill /t /f /im ShadowsocksR.exe");
-    system("taskkill /t /f /im lantern.exe");
-    system("taskkill /t /f /im youku.exe");
-    system("taskkill /t /f /im v2free.exe");
-    system("taskkill /t /f /im v2ray.exe");
-    system("taskkill /t /f /im v2rayN.exe");
-    system("taskkill /t /f /im clash-windows-386.exe");
-    system("taskkill /t /f /im winrar.exe");
-    system("taskkill /t /f /im IDMan.exe");
-    system("taskkill /t /f /im Motrix.exe");
-    system("taskkill /t /f /im v2rayN.exe");
-    system("taskkill /t /f /im wgc.exe");
-    system("taskkill /t /f /im WorldOfWarships64.exe");
+    else
+    {
+        for (int i = 0; killsequence[pos][i]; i++)
+        {
+            strcpy(com, killorder);
+            strcat(com, taskname[killsequence[pos][i]]);
+            system(com);
+        }
+    }
 }
+const char delpath[3][40] = {
+    "D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\",
+    "D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\"};
+const char delord[3][15][20] = {
+    {"del ", "*.cmd", "*.vbs", "*.rar", "*.exe"},
+    {"rmdir /s /q ", "clash", "clashB", "hysteria", "psiphon", "SSR", "SS-plugin", "v2go", "v2ray", "v2rayB"},
+};
 inline void d_web()
 {
-    system("del D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\*.cmd");
-    system("del D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\*.vbs");
-    system("del D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\*.rar");
-    system("del D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\*.exe");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\Browser");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\clash");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\clashB");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\hysteria");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\psiphon");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\SSR");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\SS-plugin");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\v2go");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\v2ray");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\v2rayB");
-    //
-    system("del D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\*.cmd");
-    system("del D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\*.vbs");
-    system("del D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\*.rar");
-    system("del D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\*.exe");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\Browser");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\clash");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\clashB");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\hysteria");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\psiphon");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\SSR");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\SS-plugin");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\v2go");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\v2ray");
-    system("rmdir /s /q D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\v2rayB");
+    char ord[100];
+    for (int i = 0; delord[i][0][0]; i++)
+    {
+        for (int j = 0; delpath[j][0]; j++)
+        {
+            for (int z = 1; delord[i][z][0]; z++)
+            {
+                strcpy(ord, delord[i][0]);
+                strcat(ord, delpath[j]);
+                strcat(ord, delord[i][z]);
+                system(ord);
+            }
+        }
+    }
 }
 inline void dabao()
 {
-    keybd_event(20, 0, 0, 0);
-    keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
     keybd_event(17, 0, 0, 0);
     keybd_event(91, 0, 0, 0);
     keybd_event(37, 0, 0, 0);
     keybd_event(37, 0, KEYEVENTF_KEYUP, 0);
     keybd_event(91, 0, KEYEVENTF_KEYUP, 0);
     keybd_event(17, 0, KEYEVENTF_KEYUP, 0);
-    kill();
-    system("del C:\\Users\\XuXixi\\Downloads /q /s");
-    system("del C:\\Users\\XuXixi\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\360.cn /q /s");
+    keybd_event(20, 0, 0, 0);
+    keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
+    kill(0);
+    system("rmdir /s /q C:\\Users\\XuXixi\\Downloads");
     system("md C:\\users\\XuXixi\\Downloads");
     d_web();
     keybd_event(20, 0, 0, 0);
     keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
     res();
 }
-inline void copybd(std::string TempBin)
-{
-    HGLOBAL hMemBin = NULL;
-    PCHAR LockBin = NULL;
-    OpenClipboard(NULL);
-    EmptyClipboard();
-    hMemBin = GlobalAlloc(GMEM_MOVEABLE, TempBin.size() + 1);
-    LockBin = (PCHAR)GlobalLock(hMemBin);
-    RtlMoveMemory(LockBin, TempBin.c_str(), TempBin.size() + 1);
-    GlobalUnlock(hMemBin);
-    LockBin = NULL;
-    SetClipboardData(CF_TEXT, hMemBin);
-    CloseClipboard();
-}
 int main()
 {
     printf("Successfully loaded!");
     Sleep(500);
-    HWND hwnd;
+    /*HWND hwnd;
     if (hwnd = ::FindWindow("ConsoleWindowClass", NULL))
     {
         ::ShowWindow(hwnd, SW_HIDE);
-    }
+    }*/
     while (1)
     {
-        if (KEY_DOWN(191) && !(GetKeyState(VK_SCROLL) && 0x001))
-        {
-            if (!ji)
-            {
-                ji = 1;
-                sta = clock();
-            }
-            else
-            {
-                double tt = (double)(clock() - sta) / CLOCKS_PER_SEC;
-                printf("clear time left:%.2fsec\n", timer - tt > 0 ? timer - tt : 0);
-                if (tt > timer)
-                {
-                    dabao();
-                    return 0;
-                }
-            }
-            continue;
-        }
-        if (KEY_DOWN(222) && !(GetKeyState(VK_NUMLOCK) && 0x001))
-        {
-            if (!once)
-            {
-                keybd_event(17, 0, 0, 0);
-                keybd_event(91, 0, 0, 0);
-                keybd_event(37, 0, 0, 0);
-                keybd_event(37, 0, KEYEVENTF_KEYUP, 0);
-                keybd_event(91, 0, KEYEVENTF_KEYUP, 0);
-                keybd_event(17, 0, KEYEVENTF_KEYUP, 0);
-                res();
-                if (GetKeyState(20) && 0x001)
-                {
-                    keybd_event(20, 0, 0, 0);
-                    keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
-                }
-                system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0");
-                once = 3;
-            }
-            continue;
-        }
-        if (KEY_DOWN(120) && !(GetKeyState(VK_NUMLOCK) && 0x001))
-        {
-            if (!once)
-            {
-                system("wget --no-check-certificate -O C:\\Users\\XuXixi\\Downloads\\ChromeGo.7z https://d2.v2rss.gq/ChromeGo.7z");
-                system("cls");
-                printf("Success!\n");
-                keybd_event(144, 0, 0, 0);
-                keybd_event(144, 0, KEYEVENTF_KEYUP, 0);
-                once = 3;
-            }
-        }
-        if (KEY_DOWN(leftb) && KEY_DOWN(right))
-        {
-            res();
-            return 0;
-        }
-        if (KEY_DOWN(lefta) || KEY_DOWN(leftb))
-        {
-            if (!once)
-            {
-                mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-                once = 1;
-            }
-            continue;
-        }
-        if (KEY_DOWN(right))
-        {
-            if (!once)
-            {
-                mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
-                once = 2;
-            }
-            continue;
-        }
         if (GetKeyState(VK_SCROLL) && 0x001)
         {
-            if (KEY_DOWN(191))
+            if (KEY_DOWN(191)) // '/'
             {
                 dabao();
                 return 0;
             }
-            if (KEY_DOWN(66))
+            if (KEY_DOWN(66)) // 'B'
             {
-                kill();
+                kill(0);
                 once = 3;
-                system("cls");
-                res();
             }
-            if (KEY_DOWN(18))
+            if (KEY_DOWN(9)) // TAB
             {
                 getmouse();
                 once = 3;
             }
-            if (KEY_DOWN(68))
+            if (KEY_DOWN(78)) //'N'
             {
                 if (!once)
                 {
@@ -240,7 +168,7 @@ int main()
                 }
                 continue;
             }
-            if (KEY_DOWN(65))
+            if (KEY_DOWN(65)) //'A'
             {
                 if (!once)
                 {
@@ -252,7 +180,7 @@ int main()
                 }
                 continue;
             }
-            if (KEY_DOWN(83))
+            if (KEY_DOWN(83)) // 'S'
             {
                 if (!once)
                 {
@@ -267,7 +195,7 @@ int main()
                 }
                 continue;
             }
-            if (KEY_DOWN(188))
+            if (KEY_DOWN(188)) //'<'
             {
                 if (!once)
                 {
@@ -282,7 +210,7 @@ int main()
                 }
                 continue;
             }
-            if (KEY_DOWN(190))
+            if (KEY_DOWN(190)) //'>'
             {
                 if (!once)
                 {
@@ -297,7 +225,7 @@ int main()
                 }
                 continue;
             }
-            if (KEY_DOWN(90))
+            if (KEY_DOWN(90)) // 'Z'
             {
                 if (!once)
                 {
@@ -311,10 +239,27 @@ int main()
                     keybd_event(37, 0, KEYEVENTF_KEYUP, 0);
                     keybd_event(91, 0, KEYEVENTF_KEYUP, 0);
                     keybd_event(17, 0, KEYEVENTF_KEYUP, 0);
+                    once = 3;
                 }
                 continue;
             }
-            if (KEY_DOWN(20))
+            if (KEY_DOWN(57)) //'9'
+            {
+                if (!once)
+                {
+                    d_web();
+                    once = 3;
+                }
+            }
+            for (int i = 0; i <= 8; i++)
+            {
+                if (KEY_DOWN(i + 48) && !once)
+                {
+                    kill(i);
+                    once = 3;
+                }
+            }
+            if (KEY_DOWN(20)) // Caps Lock
             {
                 if (!once)
                 {
@@ -323,7 +268,7 @@ int main()
                 }
                 continue;
             }
-            if (KEY_DOWN(88))
+            if (KEY_DOWN(88)) //'X'
             {
                 if (!once)
                 {
@@ -332,24 +277,35 @@ int main()
                 }
                 continue;
             }
-
-            if (KEY_DOWN(71))
+        }
+        else
+        {
+            if (KEY_DOWN(191)) //'/'
             {
-                if (!once)
+                if (!ji)
                 {
-                    copybd("chrome --incognito --window-position=100,820 --window-size=20,50");
-                    once = 3;
+                    ji = 1;
+                    sta = clock();
+                }
+                else
+                {
+                    double tt = (double)(clock() - sta) / CLOCKS_PER_SEC;
+                    if (tt > timer)
+                    {
+                        dabao();
+                        return 0;
+                    }
                 }
                 continue;
             }
-            if (KEY_DOWN(72))
+            if (KEY_DOWN(56) && !(GetKeyState(VK_NUMLOCK) && 0x001)) //'8'
             {
                 if (!once)
                 {
-                    copybd("chrome --incognito --window-position=800,820 --window-size=20,50");
+                    kill(8);
                     once = 3;
+                    continue;
                 }
-                continue;
             }
         }
         if (once == 1)
@@ -360,7 +316,6 @@ int main()
         if (ji)
         {
             ji = 0;
-            system("cls");
         }
     }
 }
