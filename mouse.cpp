@@ -92,10 +92,12 @@ const char delpath[3][40] = {
     "D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\"};
 const char delord[3][15][20] = {
     {"del ", "*.cmd", "*.vbs", "*.rar", "*.exe"},
-    {"rmdir /s /q ", "clash", "clashB", "hysteria", "psiphon", "SSR", "SS-plugin", "v2go", "v2ray", "v2rayB"},
+    {"rmdir /s /q ", "Browser", "clash", "clashB", "hysteria", "psiphon", "SSR", "SS-plugin", "v2go", "v2ray", "v2rayB"},
 };
 inline void d_web()
 {
+    system("rmdir /s /q C:\\Users\\XuXixi\\Downloads");
+    system("md C:\\users\\XuXixi\\Downloads");
     char ord[100];
     for (int i = 0; delord[i][0][0]; i++)
     {
@@ -113,17 +115,15 @@ inline void d_web()
 }
 inline void dabao()
 {
+    keybd_event(20, 0, 0, 0);
+    keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
     keybd_event(17, 0, 0, 0);
     keybd_event(91, 0, 0, 0);
     keybd_event(37, 0, 0, 0);
     keybd_event(37, 0, KEYEVENTF_KEYUP, 0);
     keybd_event(91, 0, KEYEVENTF_KEYUP, 0);
     keybd_event(17, 0, KEYEVENTF_KEYUP, 0);
-    keybd_event(20, 0, 0, 0);
-    keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
     kill(0);
-    system("rmdir /s /q C:\\Users\\XuXixi\\Downloads");
-    system("md C:\\users\\XuXixi\\Downloads");
     d_web();
     keybd_event(20, 0, 0, 0);
     keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
@@ -133,11 +133,11 @@ int main()
 {
     printf("Successfully loaded!");
     Sleep(500);
-    /*HWND hwnd;
-    if (hwnd = ::FindWindow("ConsoleWindowClass", NULL))
+    HWND hwnd = ::FindWindow("ConsoleWindowClass", NULL);
+    if (hwnd)
     {
         ::ShowWindow(hwnd, SW_HIDE);
-    }*/
+    }
     while (1)
     {
         if (GetKeyState(VK_SCROLL) && 0x001)
@@ -259,7 +259,7 @@ int main()
                     once = 3;
                 }
             }
-            if (KEY_DOWN(20)) // Caps Lock
+            if (KEY_DOWN(20) || KEY_DOWN(192)) // Caps Lock / '`'
             {
                 if (!once)
                 {
@@ -292,6 +292,11 @@ int main()
                     double tt = (double)(clock() - sta) / CLOCKS_PER_SEC;
                     if (tt > timer)
                     {
+                        if (GetKeyState(VK_NUMLOCK) && 0x001)
+                        {
+                            keybd_event(144, 0, 0, 0);
+                            keybd_event(144, 0, KEYEVENTF_KEYUP, 0);
+                        }
                         dabao();
                         return 0;
                     }
