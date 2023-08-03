@@ -5,12 +5,14 @@
 #include <ctime>
 #include <iostream>
 #define KEY_DOWN(VK_NONAME) ((GetAsyncKeyState(VK_NONAME) & 0x8000) ? 1 : 0)
-const double timer = 1.5; // clear time left after press '/'
-clock_t sta, last;        // clear time record
-int once;                 // if rise up
-bool ji;                  // if '/' rise up
-POINT wind;               // mouse position
-const int killlen = 16;   // How many to kill
+const double timer = 1.5;   // clear time left after press '/'
+clock_t sta;                // clear time record
+const double lighter = 400; // signal wait time, ms
+clock_t lsta;               // signal wait record
+int once;                   // if rise up
+bool ji;                    // if '/' rise up
+POINT wind;                 // mouse position
+const int killlen = 16;     // How many to kill
 const char taskname[killlen + 1][100] = {
     "",
     "chrome.exe",                       // 1
@@ -33,13 +35,13 @@ const char taskname[killlen + 1][100] = {
 const int killsequence[10][20] = {
     {},
     {1, 4, 11, 12, 13, 14, 15, 16}, // 1
-    {2, 4},                         // 2
-    {3, 4},                         // 3
+    {2},                            // 2
+    {3},                            // 3
     {4},                            // 4
     {5, 10},                        // 5
-    {6, 4},                         // 6
+    {6},                            // 6
     {7},                            // 7
-    {8, 4},                         // 8
+    {8},                            // 8
 };
 const char killorder[] = "taskkill /t /f /im ";
 inline void getmouse() // get mouse position
@@ -63,6 +65,7 @@ inline void kill(int pos)
 {
     keybd_event(20, 0, 0, 0); // signal
     keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
+    lsta = clock();
     char com[50];
     if (pos == 0)
     {
@@ -86,6 +89,11 @@ inline void kill(int pos)
             system(com);
         }
     }
+    double tt = (double)(clock() - lsta);
+    if (tt < lighter)
+        Sleep(lighter - tt);
+    keybd_event(20, 0, 0, 0); // end signal
+    keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
 }
 const char delpath[3][40] = {
     "D:\\XXH\\Camera\\Canon-SX200IS\\Go2\\",
@@ -250,15 +258,23 @@ int main()
                     d_web();
                     once = 3;
                 }
+                continue;
             }
+            bool pas = false;
             for (int i = 0; i <= 8; i++)
             {
-                if (KEY_DOWN(i + 48) && !once)
+                if (KEY_DOWN(i + 48))
                 {
-                    kill(i);
-                    once = 3;
+                    pas = true;
+                    if (!once)
+                    {
+                        kill(i);
+                        once = 3;
+                    }
                 }
             }
+            if (pas)
+                continue;
             if (KEY_DOWN(20) || KEY_DOWN(192)) // Caps Lock / '`'
             {
                 if (!once)
@@ -309,8 +325,8 @@ int main()
                 {
                     kill(8);
                     once = 3;
-                    continue;
                 }
+                continue;
             }
         }
         if (once == 1)
@@ -318,9 +334,6 @@ int main()
         if (once == 2)
             mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
         once = 0;
-        if (ji)
-        {
-            ji = 0;
-        }
+        ji = 0;
     }
 }
