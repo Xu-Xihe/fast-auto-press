@@ -30,18 +30,22 @@ const char taskname[killlen + 1][100] = {
     "v2free.exe",                       // 13
     "v2ray.exe",                        // 14
     "v2rayN.exe",                       // 15
-    "clash-windows-386.exe"             // 16
+    "clash.meta-windows-386.exe"        // 16
+    "naive.exe"                         // 17
+    "psiphon3.exe"                      // 18
+    "sing-box.exe"                      // 19
+    "xray.exe"                          // 20
 };
 const int killsequence[10][20] = {
     {},
-    {1, 4, 11, 12, 13, 14, 15, 16}, // 1
-    {2},                            // 2
-    {3},                            // 3
-    {4},                            // 4
-    {5, 10},                        // 5
-    {6},                            // 6
-    {7},                            // 7
-    {8},                            // 8
+    {1, 4, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}, // 1
+    {2},                                            // 2
+    {3},                                            // 3
+    {4},                                            // 4
+    {5, 10},                                        // 5
+    {6},                                            // 6
+    {7},                                            // 7
+    {8},                                            // 8
 };
 const char killorder[] = "taskkill /t /f /im ";
 inline void getmouse() // get mouse position
@@ -100,7 +104,7 @@ const char delpath[3][40] = {
     "D:\\XXH\\Camera\\Canon-SX200IS\\Go3\\"};
 const char delord[3][15][20] = {
     {"del ", "*.cmd", "*.vbs", "*.rar", "*.exe"},
-    {"rmdir /s /q ", "Browser", "clash", "clashB", "hysteria", "psiphon", "SSR", "SS-plugin", "v2go", "v2ray", "v2rayB"},
+    {"rmdir /s /q ", "Browser", "clash.meta", "clashB", "hysteria", "naiveproxy", "psiphon", "Xray", "singbox", "v2go", "v2ray", "v2rayB"},
 };
 inline void d_web()
 {
