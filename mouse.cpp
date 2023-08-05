@@ -127,8 +127,6 @@ inline void d_web()
 }
 inline void dabao()
 {
-    keybd_event(20, 0, 0, 0);
-    keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
     keybd_event(17, 0, 0, 0);
     keybd_event(91, 0, 0, 0);
     keybd_event(37, 0, 0, 0);
@@ -137,8 +135,6 @@ inline void dabao()
     keybd_event(17, 0, KEYEVENTF_KEYUP, 0);
     kill(0);
     d_web();
-    keybd_event(20, 0, 0, 0);
-    keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
     res();
 }
 int main()
@@ -259,8 +255,16 @@ int main()
             {
                 if (!once)
                 {
+                    keybd_event(20, 0, 0, 0); // signal
+                    keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
+                    lsta = clock();
                     d_web();
                     once = 3;
+                    double ttt = (double)(clock() - lsta);
+                    if (ttt < lighter)
+                        Sleep(lighter - ttt);
+                    keybd_event(20, 0, 0, 0); // end signal
+                    keybd_event(20, 0, KEYEVENTF_KEYUP, 0);
                 }
                 continue;
             }
